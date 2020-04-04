@@ -1,62 +1,83 @@
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import java.util.Iterator;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class StringTable implements TableModel {
-	private final String[] header;
-	private final String[][] data;
+/**
+ * Represents tabular data from associated data provider
+ */
+public class StringTable implements TableModel, Closeable {
+	// Amount of bottom rows which will ask to load more rows below, when they are displayed
+	private static final int LOAD_THRESHOLD = 2;
+	// Amount of rows loaded below the asking row
+	private static final int LOAD_BUFFER_SIZE = 100;
+
+	private final List<String> header = new ArrayList<>();
+	private final List<List<String>> data = new ArrayList<>();
+	private final int numCols;
 
 	private DataProvider provider;
 
-	// todo: rename
-	private int dFrom = -1;
-	private int dTo = -1;
+	private int cacheSize = 0;
 
-	private void loadChunk(int position) {
-		dFrom = position - provider.getChunkSize();
-		dTo = position + provider.getChunkSize();
+	/**
+	 * Creates string table model based on given provider
+	 *
+	 * @param dataProviderBuilder a builder for data provider
+	 * @throws IOException if provider could not be build
+	 */
+	public StringTable(DataProvider.Builder dataProviderBuilder) throws IOException {
+		provider = dataProviderBuilder.build(header);
+		numCols = header.size();
 
-		// Clamp values
-		if (dFrom < 0)
-			dFrom = 0;
-
-		if (dTo >= provider.getNumRows())
-			dTo = provider.getNumRows();
-
-		provider.loadRows(dFrom, dTo - dFrom + 1, data);
+		loadCache(0);
 	}
 
-	public StringTable(DataProvider provider) {
-		this.provider = provider;
+	/**
+	 * Tries to load more rows into cache
+	 *
+	 * @param position indicates from where cache buffer begins
+	 */
+	private void loadCache(int position) {
+		int loadEnd = position + LOAD_BUFFER_SIZE;
+		provider.loadRows(loadEnd - cacheSize, data);
 
-		this.data = new String[2 * provider.getChunkSize() + 1][provider.getNumCols()];
-		this.header = provider.getHeader();
-		//loadChunk(0);
+		cacheSize = loadEnd;
+	}
+
+	/**
+	 * Closes provider
+	 */
+	@Override
+	public void close() {
+		provider.close();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if (rowIndex < dFrom || rowIndex > dTo)
-			loadChunk(rowIndex);
+		if (rowIndex >= cacheSize - LOAD_THRESHOLD)
+			loadCache(rowIndex);
 
-		assert !(rowIndex < dFrom || rowIndex > dTo);
+		assert rowIndex < cacheSize;
 
-		return data[rowIndex - dFrom][columnIndex];
+		return data.get(rowIndex).get(columnIndex);
 	}
 
 	@Override
 	public int getRowCount() {
-		return provider.getNumRows();
+		return data.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return provider.getNumCols();
+		return numCols;
 	}
 
 	@Override
 	public String getColumnName(int columnIndex) {
-		return header[columnIndex];
+		return header.get(columnIndex);
 	}
 
 	@Override
