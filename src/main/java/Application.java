@@ -3,24 +3,23 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
 
-
 public class Application extends JFrame {
 	public static class Configuration {
 		private static boolean isWindowsOS() {
 			return System.getProperty("os.name").toLowerCase().contains("windows");
 		}
 
-		public String interpreterPath =  isWindowsOS() ? "python" : "python3";
+		public String interpreterPath = isWindowsOS() ? "python" : "python3";
 	}
 
 	private Configuration configuration = new Configuration();
 	private JTable jtable;
 	private StringTable tableModel;
 
-	private void openFileNotFoundDialog(String filepath) {
+	private void openModuleOrFileNotFoundDialog(String message) {
 		JOptionPane.showMessageDialog(
 				this,
-				"File not found:\n" + filepath,
+				message,
 				"Error",
 				JOptionPane.ERROR_MESSAGE
 		);
@@ -57,7 +56,7 @@ public class Application extends JFrame {
 
 			tableModel = newTableModel;
 		} catch (FileNotFoundException e) {
-			openFileNotFoundDialog(e.getMessage());
+			openModuleOrFileNotFoundDialog(e.getMessage());
 		} catch (IOException e) {
 			openInterpreterNotFoundDialog();
 		}

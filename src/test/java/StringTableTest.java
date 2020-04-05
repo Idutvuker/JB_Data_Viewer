@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -5,6 +6,9 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Tests require python 3 with to be installed.
+ */
 class StringTableTest {
 	StringTable table;
 
@@ -13,6 +17,11 @@ class StringTableTest {
 
 		table = new StringTable(new DataProvider.Builder(
 				new File("src/test/java/sample.csv"), configuration.interpreterPath));
+	}
+
+	@BeforeAll
+	static void assumePythonIsInstalled() throws InterruptedException {
+		PythonEnvTest.assumePythonIsInstalled();
 	}
 
 	@Test

@@ -23,7 +23,7 @@ public class DataProvider implements Closeable {
 		}
 	}
 
-	private static final String SCRIPT_PATH = "src/main/resources/script.py";
+	private static final String SCRIPT_PATH = "src/main/resources/TableLoader.py";
 
 	private final int numCols;
 
@@ -53,9 +53,13 @@ public class DataProvider implements Closeable {
 
 		scriptOutScanner = new Scanner(scriptOut).useDelimiter("\\R+");
 
+		// if pandas is not installed
+		if (!scriptOutScanner.nextBoolean())
+			throw new FileNotFoundException("Pandas module is not installed");
+
 		// if file is not loaded
 		if (!scriptOutScanner.nextBoolean())
-			throw new FileNotFoundException(file.getAbsolutePath());
+			throw new FileNotFoundException("File not found:\n" + file.getAbsolutePath());
 
 		numCols = scriptOutScanner.nextInt();
 

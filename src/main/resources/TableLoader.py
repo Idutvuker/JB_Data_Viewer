@@ -1,12 +1,13 @@
-import pandas as pd
-import csv
-import sys
+try:
+    import pandas as pd
+except ImportError:
+    # Pandas is not found
+    print(False)
+    exit(0)
 
-#data = pd.read_csv(path, skipinitialspace=True)
-#print(data.shape[0] - 1, data.shape[1], sep='\n')
-#print(*data.columns, sep='\n', flush=True)
+# Pandas is found
+print(True)
 
-#path = "D:\coding\Idea Projects\JB_Data_Viewer\src\\test\\java\\sample.csv"
 path = input()
 
 try:

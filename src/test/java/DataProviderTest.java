@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -8,7 +9,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Tests require python 3 with pandas to be installed.
+ */
 class DataProviderTest {
+	@BeforeAll
+	static void assumePythonIsInstalled() throws InterruptedException {
+		PythonEnvTest.assumePythonIsInstalled();
+	}
 
 	@Test
 	void TestDataProvider() throws IOException {
