@@ -6,7 +6,7 @@ import java.io.*;
 
 public class Application extends JFrame {
 	public static class Configuration {
-		private boolean isWindowsOS() {
+		private static boolean isWindowsOS() {
 			return System.getProperty("os.name").toLowerCase().contains("windows");
 		}
 
