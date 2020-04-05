@@ -69,8 +69,8 @@ public class DataProvider implements Closeable {
 	}
 
 	/**
-	 * Tells python to load given number of rows.
-	 * Then puts loaded rows in the list
+	 * Asks python to load given number of rows.
+	 * Then puts loaded rows in the list.
 	 *
 	 * @param numRows Number of rows to load
 	 * @param data    List in which data will be stored
