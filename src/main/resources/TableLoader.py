@@ -2,11 +2,11 @@ try:
     import pandas as pd
 except ImportError:
     # Pandas is not found
-    print(False)
+    print(False, flush=True)
     exit(0)
 
 # Pandas is found
-print(True)
+print(True, flush=True)
 
 path = input()
 
@@ -23,7 +23,7 @@ if not file_found:
     exit(0)
 
 # Print number of columns
-print(header.shape[1])
+print(header.shape[1], flush=True)
 # Print column names
 print(*header.columns, sep='\n', flush=True)
 
